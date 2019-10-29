@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import "./App.css";
-import Person from "./components/Person";
-import Radium, { StyleRoot } from 'radium';
+import Person from "./components/Persons/Persons";
 
 class App extends Component {
   state = {
@@ -13,13 +12,26 @@ class App extends Component {
     showPersons: false
   };
 
-  nameChangedHandler = event => {
+  nameChangedHandler = (event, id) => {
+    //find the person with id
+    const personIndex = this.state.persons.findIndex(p => {
+      return p.id === id
+    });
+
+    //getting the person with id. Don't mutate state with ... spread operator
+    const person = {
+      ...this.state.persons[personIndex]
+    }
+
+    //updating the person's name
+    person.name = event.target.value;
+
+    const persons = [...this.state.persons];
+    persons[personIndex] = person;
+
+    //update the state
     this.setState({
-      persons: [
-        { name: "jas", age: 20 },
-        { name: "yash", age: 22 },
-        { name: event.target.value, age: 30 }
-      ]
+      persons: persons
     });
   };
 
@@ -47,10 +59,6 @@ class App extends Component {
       border: "1px solid blue",
       padding: "8px",
       cursor: "pointer",
-      ':hover': {
-        backgroundColor: 'lightgreen',
-        color: 'black'
-      }
     };
     let person = null;
 
@@ -64,7 +72,7 @@ class App extends Component {
                 name={person.name}
                 age={person.age}
                 key={person.id}
-                change={() => this.nameChangedHandler(person.id)}
+                change={(event) => this.nameChangedHandler(event, person.id)}
               />
             );
           })}
@@ -72,10 +80,6 @@ class App extends Component {
       );
 
       style.backgroundColor = 'red';
-      style[':hover'] = {
-        backgroundColor: 'salmon',
-        color: 'black'
-      }
     }
 
     const classes = [];
@@ -88,19 +92,17 @@ class App extends Component {
       classes.push('bold') //classes = 'red, bold'
     }
     return (
-      <StyleRoot>
-        <div className="App">
-          {/* <button style={style} onClick={() => this.switchNameHandler("Jassa")}> */}
-          <p className={classes.join(" ")}>This is really working..!</p>
-          <button style={style} onClick={this.toggleNameHandler}>
-            Toggle Persons
+      <div className="App">
+        {/* <button style={style} onClick={() => this.switchNameHandler("Jassa")}> */}
+        <p className={classes.join(" ")}>This is really working..!</p>
+        <button style={style} onClick={this.toggleNameHandler}>
+          Toggle Persons
         </button>
-          {person}
-        </div>
-      </StyleRoot>
+        {person}
+      </div>
     );
   }
 }
 
 
-export default Radium(App);
+export default App;
